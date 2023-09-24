@@ -31,7 +31,7 @@ const CreatePost = () => {
     if (form.prompt) {
       try {
         setGeneratingImg(true);
-        axios.post("/api/v1/dalle/txt2img", { prompt: form.prompt }, {timeout:300000})
+        axios.post("/api/v1/dalle/txt2img", {contractAddress: contractAddress,  prompt: form.prompt }, {timeout:300000})
         .then((response) => {
             console.log("/api/v1/dalle/txt2img")
             // const base64ImageString = Buffer.from(response.data, 'binary').toString('base64')
@@ -40,7 +40,7 @@ const CreatePost = () => {
         })
 
         // submitterUploadResult
-        axios.post("/api/v1/dalle/submitterUploadResult", {}, {timeout:300000})
+        axios.post("/api/v1/dalle/submitterUploadResult", {contractAddress: contractAddress,}, {timeout:300000})
         .then((response) => {
             console.log("submitterUploadResult")
             console.log(response.data)
@@ -91,7 +91,7 @@ const CreatePost = () => {
   const startChallenge = async () => {
     try {
         console.log("startChallenge")
-        const data = {}
+        const data = { contractAddress: contractAddress, }
         console.log(data)
         axios.post("/api/v1/dalle/startChallenge", data, {timeout:300000})
         .then((response) => {
@@ -111,7 +111,7 @@ const CreatePost = () => {
   const challengerRespond = async () => {
     try {
         console.log("challengerRespond")
-        const data = {}
+        const data = {contractAddress: contractAddress,}
         console.log(data)
         axios.post("/api/v1/dalle/challengerRespond", data, {timeout:300000})
         .then((response) => {
@@ -145,7 +145,7 @@ const CreatePost = () => {
   const submitterRespond = async () => {
     try {
         console.log("submitterRespond")
-        const data = {}
+        const data = {contractAddress: contractAddress,}
         axios.post("/api/v1/dalle/submitterRespond", data, {timeout:300000})
         .then((response) => {
             console.log(response.data)
@@ -178,7 +178,7 @@ const CreatePost = () => {
   const autoRespond = async () => {
     try {
         console.log("autoRespond")
-        const data = {}
+        const data = {contractAddress: contractAddress,}
         let end = false;
         for (let i = 0; i < 50; i++) {
 
@@ -211,6 +211,10 @@ const CreatePost = () => {
             })
 
             if (end) {
+                Swal.fire({
+                    title: "END",
+                    text: "Bisection END, Please ASSERT",
+                });
                 break
             }
         }
@@ -228,7 +232,7 @@ const CreatePost = () => {
   const challengerAssert = async () => {
     try {
         console.log("challengerAssert")
-        const data = {}
+        const data = {contractAddress: contractAddress,}
         console.log(data)
         axios.post("/api/v1/dalle/challengerAssert", data, {timeout:300000})
         .then((response) => {
@@ -304,7 +308,7 @@ const CreatePost = () => {
   return (
     <section className="max-w-7xl mx-auto">
       <div>
-        <h1 className="font-extrabold text-[#222328] text-[32px]">opML</h1>
+        <h1 className="font-extrabold text-[#222328] text-[32px]">opML - Stable Diffusion</h1>
         <p className="mt-2 text-[#666e75] text-[16px] max-w-[500px]">
          Optimism Machine Learning on Blockchain
         </p>
@@ -312,14 +316,6 @@ const CreatePost = () => {
 
       <form className="mt-16 max-w-3xl" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-5">
-          <FormField
-            LabelName="Your Name"
-            type="text"
-            name="name"
-            placeholder="Ex., shabin k"
-            value={form.name}
-            handleChange={handleChange}
-          />
           <FormField
             LabelName="Prompt"
             type="text"
@@ -430,18 +426,17 @@ const CreatePost = () => {
           <p>Assert Result: {assertResult}</p>
         </div>
 
-        <div className="mt-10">
+        {/* <div className="mt-10">
           <p className="mt-2 text-[#666e75] text-[14px]">
-            Once you have created the image you want, you can share it with
-            others in the community
+            Once you have created the image you want, you can upload it as an NFT
           </p>
           <button
-            type="submit"
+            type="button"
             className="mt-3 text-white bg-[#6469ff] font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center"
           >
-            {loading ? "Sharing..." : "Share with the community"}
+            {loading ? "Sharing..." : "Upload as NFT"}
           </button>
-        </div>
+        </div> */}
       </form>
     </section>
   );
