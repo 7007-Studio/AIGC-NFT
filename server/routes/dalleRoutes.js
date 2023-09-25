@@ -9,6 +9,7 @@ const router = express.Router();
 
 const sd_host = "http://localhost:5000"
 const opml_host = "http://localhost:3333"
+const llm_host = "http://localhost:8042/llama"
 
 router.route("/").get((req, res) => {
   res.send("DALL E server");
@@ -43,6 +44,23 @@ router.route("/txt2img").post(async (req, res) => {
         // //   )}`
         // console.log("imageUrl: ", imageUrl)
         res.status(200).send(base64ImageString);
+      })
+    } catch (error) {
+      console.log("ERROR :", error);
+      res.status(500).send(error?.response.data.error.message);
+    }
+  });
+
+  router.route("/llama").post(async (req, res) => {
+    try {
+      console.log("llama")
+      const { prompt } = req.body;
+      console.log("prompt: ", prompt)
+      axios.post(llm_host, { prompt: prompt })
+        .then((response) => {
+            const content = response.data.responses[0].generation.content
+            console.log("llm response: ", content)
+            res.status(200).send(content);
       })
     } catch (error) {
       console.log("ERROR :", error);
