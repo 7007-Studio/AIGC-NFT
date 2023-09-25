@@ -28,9 +28,44 @@ const Llama = () => {
   const [assertResult, setAssertResult] = useState("")
   const [llmOutput, setLlmOutput] = useState("")
 
+  const isContractAddressSet = () => {
+    return contractAddress != ''
+  }
+
+  const isChallengeIdSet = () => {
+    return challengeId != ''
+  }
+
+  const checkContractAddressSet = () => {
+    if (!isContractAddressSet()) {
+        Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Please initiate opML request first!",
+            });
+        return false
+    }
+    return true
+  }
+
+  const checkChallengeIdSet = () => {
+    if (!isChallengeIdSet()) {
+        Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Please start the challenge first!",
+            });
+        return false
+    }
+    return true
+  }
+
   const generateImage = async () => {
     if (form.prompt) {
       try {
+        if (!checkContractAddressSet()) {
+            return 
+        }
         setGeneratingText(true);
         axios.post("/api/v1/dalle/llama", {contractAddress: contractAddress,  prompt: form.prompt }, {timeout:300000})
         .then((response) => {
@@ -90,6 +125,9 @@ const Llama = () => {
 
   const startChallenge = async () => {
     try {
+        if (!checkContractAddressSet()) {
+            return 
+        }
         console.log("startChallenge")
         const data = { contractAddress: contractAddress, }
         console.log(data)
@@ -110,6 +148,9 @@ const Llama = () => {
 
   const challengerRespond = async () => {
     try {
+        if (!checkContractAddressSet() || !checkChallengeIdSet()) {
+            return 
+        }
         console.log("challengerRespond")
         const data = {contractAddress: contractAddress,}
         console.log(data)
@@ -144,6 +185,9 @@ const Llama = () => {
 
   const submitterRespond = async () => {
     try {
+        if (!checkContractAddressSet() || !checkChallengeIdSet()) {
+            return 
+        }
         console.log("submitterRespond")
         const data = {contractAddress: contractAddress,}
         axios.post("/api/v1/dalle/submitterRespond", data, {timeout:300000})
@@ -177,6 +221,9 @@ const Llama = () => {
 
   const autoRespond = async () => {
     try {
+        if (!checkContractAddressSet() || !checkChallengeIdSet()) {
+            return 
+        }
         console.log("autoRespond")
         const data = {contractAddress: contractAddress,}
         let end = false;
@@ -231,6 +278,9 @@ const Llama = () => {
 
   const challengerAssert = async () => {
     try {
+        if (!checkContractAddressSet() || !checkChallengeIdSet()) {
+            return 
+        }
         console.log("challengerAssert")
         const data = {contractAddress: contractAddress,}
         console.log(data)
@@ -311,7 +361,7 @@ const Llama = () => {
       <div>
         <h1 className="font-extrabold text-[#222328] text-[32px]">opML - Llama</h1>
         <p className="mt-2 text-[#666e75] text-[16px] max-w-[500px]">
-         Optimism Machine Learning on Blockchain
+        Optimistic Machine Learning on Blockchain
         </p>
       </div>
 
@@ -342,7 +392,7 @@ const Llama = () => {
           <br></br>
         </div>
 
-        <label for="story">Output from LLAMA:</label>
+        <label>Output from LLAMA:</label>
         <textarea id="story" name="story" rows="12" cols="80"
             value={llmOutput} onChange={e => setLlmOutput(e.target.value)}/>
             
