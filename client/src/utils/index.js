@@ -1,5 +1,5 @@
 import FileSaver from "file-saver";
-import { surpriseMePrompts } from "../constants";
+import { surpriseMePrompts,surpriseMeLLMPrompts } from "../constants";
 
 const Toast = Swal.mixin({
   toast: true,
@@ -19,6 +19,13 @@ export function getRandomPrompt(prompt) {
   if (randomPrompt === prompt) return getRandomPrompt(prompt);
   return randomPrompt;
 }
+
+export function getRandomLLMPrompt(prompt) {
+    const randomIndex = Math.floor(Math.random() * surpriseMeLLMPrompts.length);
+    const randomPrompt = surpriseMeLLMPrompts[randomIndex];
+    if (randomPrompt === prompt) return getRandomLLMPrompt(prompt);
+    return randomPrompt;
+  }
 
 export async function downloadImage(_id, photo) {
   FileSaver.saveAs(photo, `download-${_id}.jpg`);

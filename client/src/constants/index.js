@@ -46,3 +46,17 @@ export const surpriseMePrompts = [
   "A man wanders through the rainy streets of Tokyo, with bright neon signs, 50mm",
   "A Space Shuttle flying above Cape Town, digital art",
 ];
+
+export const surpriseMeLLMPrompts = [
+"Give me 10 date-night ideas for me and my partner but include ideas that we can do in the house, outdoors and within a 10-mile radius.",
+"Write a short story about a unicorn and a postbox using only emojis.",
+"What is the distance between the sun and my garden shed, tell me the answer in Spanish.",
+"Pretend you're an alien sent to Earth to discover whether hot dogs are in fact made from furry animals, what did you discover?",
+"Tell me the best places to travel on a budget of $1000 including car hire, flights and accommodation.",
+"Give me a basic guide on how to cultivate a growth mindset.",
+"Create a workout routine that can help me lose 12 pounds in two months without the use of equipment.",
+"What are some mindfulness exercises for reducing anxiety and becoming more present?",
+"Explain the main causes of disruptive sleep patterns and what I can do to improve them.",
+"Create a bulleted list of organic supplements that boost metabolism.",
+"Create a meal plan aimed at young adults to help them eat more healthily.",
+]
