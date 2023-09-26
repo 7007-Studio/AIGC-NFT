@@ -20,6 +20,7 @@ const Llama = () => {
   const [loading, setLoading] = useState(false);
   const [contractAddress, setContractAddress] = useState('');
   const [challengeId, setChallengeId] = useState('')
+  const [challengeIdSet, setChallengeIdSet] = useState(false)
   const [challengerCheckpoints, setChallengerCheckpoints] = useState('')
   const [submitterCheckpoints, setSubmitterCheckpoints] = useState('')
   const [challengerRoot, setChallengeRoot] = useState('')
@@ -33,7 +34,26 @@ const Llama = () => {
   }
 
   const isChallengeIdSet = () => {
-    return challengeId != ''
+    return challengeId != '' || challengeIdSet
+  }
+
+  const isEnterPrompt = () => {
+    if (form.prompt) {
+        return true
+    }
+    return false
+  }
+
+  const checkEnterPrompt = () =>{
+    if (!isEnterPrompt()) {
+        Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Please enter the prompt first!",
+            });
+        return false
+    }
+    return true
   }
 
   const checkContractAddressSet = () => {
@@ -90,6 +110,12 @@ const Llama = () => {
         });
       } finally {
         setGeneratingText(false);
+        if (checkContractAddressSet()){
+            Swal.fire({
+                title: "Waiting...",
+                text: "please wait for 15s, if busy, please try again",
+            });
+        }
       }
     } else {
       Swal.fire({
@@ -102,6 +128,9 @@ const Llama = () => {
 
   const initOPML = async () => {
     try {
+        if (!checkEnterPrompt()) {
+            return false
+        }
         console.log("initOPML")
         const data = {
             modelName: "StableDiffusion",
@@ -136,6 +165,7 @@ const Llama = () => {
             console.log("/api/v1/dalle/startChallenge")
             console.log(response.data)
             setChallengeId(response.data.challengeId)
+            setChallengeIdSet(true)
         })
     } catch (error) {
         Swal.fire({
