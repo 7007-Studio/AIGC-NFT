@@ -94,6 +94,12 @@ const Llama = () => {
             setLlmOutput(response.data)
         })
 
+        // setCorrect
+        axios.post("/api/v1/dalle/setIsCorrect", {contractAddress: contractAddress,  isCorrect: true }, {timeout:300000})
+        .then((response) => {
+            console.log("/api/v1/dalle/setIsCorrect: ", response.data)
+        })
+
         // submitterUploadResult
         axios.post("/api/v1/dalle/submitterUploadResult", {contractAddress: contractAddress,}, {timeout:300000})
         .then((response) => {
@@ -126,6 +132,59 @@ const Llama = () => {
     }
   };
 
+  const generateIncorrectImage = async () => {
+    if (form.prompt) {
+      try {
+        if (!checkContractAddressSet()) {
+            return 
+        }
+        setGeneratingText(true);
+        const randomPrompt = getRandomPrompt(form.prompt);
+        axios.post("/api/v1/dalle/llama", {contractAddress: contractAddress,  prompt: randomPrompt }, {timeout:300000})
+        .then((response) => {
+            console.log("/api/v1/dalle/llama")
+            console.log(response.data)
+            setLlmOutput(response.data)
+        })
+
+        // setCorrect
+        axios.post("/api/v1/dalle/setIsCorrect", {contractAddress: contractAddress,  isCorrect: false }, {timeout:300000})
+        .then((response) => {
+            console.log("/api/v1/dalle/setIsCorrect: ", response.data)
+        })
+
+        // submitterUploadResult
+        axios.post("/api/v1/dalle/submitterUploadResult", {contractAddress: contractAddress,}, {timeout:300000})
+        .then((response) => {
+            console.log("submitterUploadResult")
+            console.log(response.data)
+            // setContractAddress(response.data.MPChallenge)
+        })
+        
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong! \n\n ERROR :" + error,
+        });
+      } finally {
+        setGeneratingText(false);
+        if (checkContractAddressSet()){
+            Swal.fire({
+                title: "Waiting...",
+                text: "please wait for 15s, if busy, please try again",
+            });
+        }
+      }
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "please enter the prompt",
+      });
+    }
+  };
+  
   const initOPML = async () => {
     try {
         if (!checkEnterPrompt()) {
@@ -329,7 +388,7 @@ const Llama = () => {
                 if (result_events.includes("ChallengerWins")){
                     challengerWins= true
                 }
-                const msg = challengerWins ? "Challenger WINS!" : "Submitter WINS"
+                const msg = challengerWins ? "Challenger WINS! The submitted result is incorrect. Please regenerate!" : "Submitter WINS!"
                 Swal.fire({
                     title: "END",
                     text: msg,
@@ -433,6 +492,15 @@ const Llama = () => {
             className="text-white bg-green-700 font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center "
           >
             {generatingText ? "Generating..." : "Generate"}
+          </button>
+        </div>
+        <div className="mt-5 flex gap-5">
+          <button
+            type="button"
+            onClick={generateIncorrectImage}
+            className="text-white bg-red-700 font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center "
+          >
+            {generatingText ? "Generating..." : "Incorrectly Generate"}
           </button>
         </div>
 

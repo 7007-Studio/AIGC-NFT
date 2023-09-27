@@ -152,4 +152,19 @@ router.route("/challengerAssert").post(async (req, res) => {
     }
 });
 
+// setIsCorrect
+router.route("/setIsCorrect").post(async (req, res) => {
+    try {
+        console.log("/setIsCorrect")
+        axios.post((opml_host + "/setIsCorrect"), req.body)
+        .then((response) => {
+            console.log(response.data)
+            res.status(200).send(response.data)
+        })
+    } catch (error) {
+        console.log("ERROR: ", error)
+        res.status(500).send(error?.response.data.error.message);
+    }
+});
+
 export default router;

@@ -93,6 +93,12 @@ const CreatePost = () => {
             const imageUrl = "data:image/png;base64,"+response.data
             setForm({ ...form, photo: imageUrl });
         })
+        
+        // setCorrect
+        axios.post("/api/v1/dalle/setIsCorrect", {contractAddress: contractAddress,  isCorrect: true }, {timeout:300000})
+        .then((response) => {
+            console.log("/api/v1/dalle/setIsCorrect: ", response.data)
+        })
 
         // submitterUploadResult
         axios.post("/api/v1/dalle/submitterUploadResult", {contractAddress: contractAddress,}, {timeout:300000})
@@ -125,6 +131,62 @@ const CreatePost = () => {
       });
     }
   };
+
+  const generateIncorrectImage = async () => {
+    if (form.prompt) {
+      try {
+        if (!checkContractAddressSet()) {
+            return 
+        }
+        setGeneratingImg(true);
+        const randomPrompt = getRandomPrompt(form.prompt);
+        axios.post("/api/v1/dalle/txt2img", {contractAddress: contractAddress,  prompt: randomPrompt }, {timeout:300000})
+        .then((response) => {
+            console.log("/api/v1/dalle/txt2img")
+            // const base64ImageString = Buffer.from(response.data, 'binary').toString('base64')
+            const imageUrl = "data:image/png;base64,"+response.data
+            setForm({ ...form, photo: imageUrl });
+        })
+
+        // setCorrect
+        axios.post("/api/v1/dalle/setIsCorrect", {contractAddress: contractAddress,  isCorrect: false }, {timeout:300000})
+        .then((response) => {
+            console.log("/api/v1/dalle/setIsCorrect: ", response.data)
+        })
+        
+
+        // submitterUploadResult
+        axios.post("/api/v1/dalle/submitterUploadResult", {contractAddress: contractAddress,}, {timeout:300000})
+        .then((response) => {
+            console.log("submitterUploadResult")
+            console.log(response.data)
+            // setContractAddress(response.data.MPChallenge)
+        })
+        
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong! \n\n ERROR :" + error,
+        });
+      } finally {
+        setGeneratingImg(false);
+        if (checkContractAddressSet()){
+            Swal.fire({
+                title: "Waiting...",
+                text: "please wait for 15s, if busy, please try again",
+            });
+        }
+      }
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "please enter the prompt",
+      });
+    }
+  };
+
 
   const initOPML = async () => {
     try {
@@ -329,7 +391,7 @@ const CreatePost = () => {
                 if (result_events.includes("ChallengerWins")){
                     challengerWins= true
                 }
-                const msg = challengerWins ? "Challenger WINS!" : "Submitter WINS"
+                const msg = challengerWins ? "Challenger WINS! The submitted result is incorrect. Please regenerate!" : "Submitter WINS!"
                 Swal.fire({
                     title: "END",
                     text: msg,
@@ -439,6 +501,7 @@ const CreatePost = () => {
             )}
           </div>
         </div>
+
         <div className="mt-5 flex gap-5">
           <button
             type="button"
@@ -446,6 +509,15 @@ const CreatePost = () => {
             className="text-white bg-green-700 font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center "
           >
             {generatingImg ? "Generating..." : "Generate"}
+          </button>
+        </div>
+        <div className="mt-5 flex gap-5">
+          <button
+            type="button"
+            onClick={generateIncorrectImage}
+            className="text-white bg-red-700 font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center "
+          >
+            {generatingImg ? "Generating..." : "Incorrectly Generate"}
           </button>
         </div>
 
