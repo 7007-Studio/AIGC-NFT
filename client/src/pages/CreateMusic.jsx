@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { preview } from "../assets";
-import { getRandomPrompt } from "../utils";
 import { FormField, Loader } from "../components";
+import { getRandomPrompt } from "../utils";
 
 import axios from 'axios';
 
@@ -14,9 +13,9 @@ const CreatePost = () => {
   const [form, setForm] = useState({
     name: "",
     prompt: "",
-    photo: "",
+    audio: "",
   });
-  const [generatingImg, setGeneratingImg] = useState(false);
+  const [generatingMusic, setGeneratingMusic] = useState(false);
   const [loading, setLoading] = useState(false);
   const [contractAddress, setContractAddress] = useState('');
   const [challengeId, setChallengeId] = useState('')
@@ -79,19 +78,20 @@ const CreatePost = () => {
     return true
   }
 
-  const generateImage = async () => {
+  const generateMusic = async () => {
     if (form.prompt) {
       try {
         if (!checkContractAddressSet()) {
             return 
         }
-        setGeneratingImg(true);
-        axios.post("/api/v1/dalle/txt2img", {contractAddress: contractAddress,  prompt: form.prompt }, {timeout:300000})
+        setGeneratingMusic(true);
+        axios.post("/api/v1/dalle/txt2music", {contractAddress: contractAddress,  prompt: form.prompt }, {timeout:300000})
         .then((response) => {
-            console.log("/api/v1/dalle/txt2img")
+            console.log("/api/v1/dalle/txt2music")
             // const base64ImageString = Buffer.from(response.data, 'binary').toString('base64')
-            const imageUrl = "data:image/png;base64,"+response.data
-            setForm({ ...form, photo: imageUrl });
+          // const imageUrl = "data:image/png;base64," + response.data
+          const audioUrl = "data:audio/mpeg;base64," + response.data
+            setForm({ ...form, audio: audioUrl });
         })
         
         // setCorrect
@@ -115,7 +115,7 @@ const CreatePost = () => {
           text: "Something went wrong! \n\n ERROR :" + error,
         });
       } finally {
-        setGeneratingImg(false);
+        setGeneratingMusic(false);
         if (checkContractAddressSet()){
             Swal.fire({
                 title: "Waiting...",
@@ -132,20 +132,19 @@ const CreatePost = () => {
     }
   };
 
-  const generateIncorrectImage = async () => {
+  const generateIncorrectMusic = async () => {
     if (form.prompt) {
       try {
         if (!checkContractAddressSet()) {
             return 
         }
-        setGeneratingImg(true);
+        setGeneratingMusic(true);
         const randomPrompt = getRandomPrompt(form.prompt);
-        axios.post("/api/v1/dalle/txt2img", {contractAddress: contractAddress,  prompt: randomPrompt }, {timeout:300000})
+        axios.post("/api/v1/dalle/txt2music", {contractAddress: contractAddress,  prompt: randomPrompt }, {timeout:300000})
         .then((response) => {
-            console.log("/api/v1/dalle/txt2img")
-            // const base64ImageString = Buffer.from(response.data, 'binary').toString('base64')
-            const imageUrl = "data:image/png;base64,"+response.data
-            setForm({ ...form, photo: imageUrl });
+            console.log("/api/v1/dalle/txt2music")
+          const audioUrl = "data:audio/mpeg;base64," + response.data
+            setForm({ ...form, audio: audioUrl });
         })
 
         // setCorrect
@@ -170,7 +169,7 @@ const CreatePost = () => {
           text: "Something went wrong! \n\n ERROR :" + error,
         });
       } finally {
-        setGeneratingImg(false);
+        setGeneratingMusic(false);
         if (checkContractAddressSet()){
             Swal.fire({
                 title: "Waiting...",
@@ -195,7 +194,7 @@ const CreatePost = () => {
         }
         console.log("initOPML")
         const data = {
-            modelName: "StableDiffusion",
+            modelName: "MusicGen",
             prompt: form.prompt
         }
         console.log(data)
@@ -410,7 +409,7 @@ const CreatePost = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (form.prompt && form.photo) {
+    if (form.prompt && form.audio) {
       setLoading(true);
       try {
         const response = await fetch(`${serverURL}` + "/api/v1/post", {
@@ -450,7 +449,7 @@ const CreatePost = () => {
   return (
     <section className="max-w-7xl mx-auto">
       <div>
-        <h1 className="font-extrabold text-[#222328] text-[32px]">opML - Stable Diffusion</h1>
+        <h1 className="font-extrabold text-[#222328] text-[32px]">opML - MusicGen</h1>
         <p className="mt-2 text-[#666e75] text-[16px] max-w-[500px]">
          Optimistic Machine Learning on Blockchain
         </p>
@@ -479,46 +478,45 @@ const CreatePost = () => {
           <p>contract address: {contractAddress}</p>
         </div>
 
+          {/* audio tag */}
+          
+
           <div className="relative bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-64 p-3 h-64 flex justify-center items-center">
-            {form.photo ? (
-              <img
-                src={form.photo}
-                alt={form.prompt}
-                className="w-full h-full object-contain"
-              />
+            {form.audio ? (
+              <audio controls
+                src={form.audio}
+                alt={form.prompt} 
+                type="audio/ogg"
+                className="w-full h-full object-contain">
+              </audio>
             ) : (
-              <img
-                src={preview}
-                alt="preview"
-                className="w-9/12 h-9/12 object-contain opacity-40"
-              />
+              <div>No music now... Generate yourself!</div>
             )}
 
-            {generatingImg && (
+            {generatingMusic && (
               <div className="absolute inset-0 z-0 flex justify-center items-center bg-[rgba(0,0,0,0.5)] rounded-lg">
                 <Loader />
               </div>
             )}
           </div>
-
         </div>
 
         <div className="mt-5 flex gap-5">
           <button
             type="button"
-            onClick={generateImage}
+            onClick={generateMusic}
             className="text-white bg-green-700 font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center "
           >
-            {generatingImg ? "Generating..." : "Generate"}
+            {generatingMusic ? "Generating..." : "Generate"}
           </button>
         </div>
         <div className="mt-5 flex gap-5">
           <button
             type="button"
-            onClick={generateIncorrectImage}
+            onClick={generateIncorrectMusic}
             className="text-white bg-red-700 font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center "
           >
-            {generatingImg ? "Generating..." : "Incorrectly Generate"}
+            {generatingMusic ? "Generating..." : "Incorrectly Generate"}
           </button>
         </div>
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom'
 
 import { logo } from './assets'
-import { Home, CreatePost, Llama } from "./pages";
+import { Home, CreatePost, Llama, CreateMusic } from "./pages";
 import GithubCorner from 'react-github-corner';
 
 const NoInternetConnection = () => {
@@ -45,8 +45,9 @@ const App = () => {
           <main className='sm:p-8 px-4 py-8 w-full bg-[#f9fafe] min-h-[calc(100vh-73px)]'>
             <Routes>
               {/* <Route path='/' element={<Home/>}/> */}
-              <Route path='/' element={<CreatePost/>}/>
-              <Route path='/sd' element={<CreatePost/>}/>
+              <Route path='/' element={<CreateMusic/>}/>
+              <Route path='/sd' element={<CreatePost />} />
+              <Route path='/music' element={<CreateMusic/>}/>
               <Route path='/llm' element={<Llama/>}/>
             </Routes>
           </main>

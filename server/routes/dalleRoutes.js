@@ -1,7 +1,7 @@
-import express from "express";
 import * as dotenv from "dotenv";
+import express from "express";
 
-import axios from "axios"
+import axios from "axios";
 
 dotenv.config();
 
@@ -10,6 +10,7 @@ const router = express.Router();
 const sd_host = "http://localhost:5000"
 const opml_host = "http://localhost:3333"
 const llm_host = "http://localhost:8042/llama"
+const music_host = "http://localhost:5001"
 
 router.route("/").get((req, res) => {
   res.send("DALL E server");
@@ -35,7 +36,7 @@ router.route("/txt2img").post(async (req, res) => {
       console.log("txt2img")
       const { prompt } = req.body;
       console.log("prompt: ", prompt)
-      axios.post("http://localhost:5000/txt2img", {
+      axios.post(sd_host+"/txt2img", {
         prompt: prompt
       }, {responseType: 'arraybuffer'}).then((response) => {
         const base64ImageString = Buffer.from(response.data, 'binary').toString('base64')
@@ -51,22 +52,43 @@ router.route("/txt2img").post(async (req, res) => {
     }
   });
 
-  router.route("/llama").post(async (req, res) => {
+  router.route("/txt2music").post(async (req, res) => {
     try {
-      console.log("llama")
+      console.log("txt2music")
       const { prompt } = req.body;
       console.log("prompt: ", prompt)
-      axios.post(llm_host, { prompt: prompt })
-        .then((response) => {
-            const content = response.data.responses[0].generation.content
-            console.log("llm response: ", content)
-            res.status(200).send(content);
+      axios.post(music_host+"/txt2music", {
+        prompt: prompt
+      }, {responseType: 'arraybuffer'}).then((response) => {
+        const base64ImageString = Buffer.from(response.data, 'binary').toString('base64')
+        // const imageDataURL = `data:image/png;base64,${btoa(
+        //     String.fromCharCode(...new Uint8Array(response.data))
+        // //   )}`
+        // console.log("imageUrl: ", imageUrl)
+        res.status(200).send(base64ImageString);
       })
     } catch (error) {
       console.log("ERROR :", error);
       res.status(500).send(error?.response.data.error.message);
     }
   });
+
+router.route("/llama").post(async (req, res) => {
+try {
+    console.log("llama")
+    const { prompt } = req.body;
+    console.log("prompt: ", prompt)
+    axios.post(llm_host, { prompt: prompt })
+    .then((response) => {
+        const content = response.data.responses[0].generation.content
+        console.log("llm response: ", content)
+        res.status(200).send(content);
+    })
+} catch (error) {
+    console.log("ERROR :", error);
+    res.status(500).send(error?.response.data.error.message);
+}
+});
 
 router.route("/opmlRequest").post(async (req, res) => {
     try {
