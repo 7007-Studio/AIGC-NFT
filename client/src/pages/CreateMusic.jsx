@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { FormField, Loader } from "../components";
 import { getRandomPrompt } from "../utils";
 
+import { preview } from "../assets";
+
 import axios from 'axios';
 
 const CreatePost = () => {
@@ -15,6 +17,7 @@ const CreatePost = () => {
     prompt: "",
     audio: "",
   });
+  const [generatingImg, setGeneratingImg] = useState(false);
   const [generatingMusic, setGeneratingMusic] = useState(false);
   const [loading, setLoading] = useState(false);
   const [contractAddress, setContractAddress] = useState('');
@@ -55,14 +58,10 @@ const CreatePost = () => {
   }
 
   const checkContractAddressSet = () => {
-    if (!isContractAddressSet()) {
-        Swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: "Please initiate opML request first!",
-            });
-        return false
-    }
+    // if (!isContractAddressSet()) {
+    //   //  initOPML()
+    //     return false
+    // }
     return true
   }
 
@@ -78,14 +77,124 @@ const CreatePost = () => {
     return true
   }
 
-  const generateMusic = async () => {
+  const generateImage = async (contractAddr) => {
     if (form.prompt) {
       try {
-        if (!checkContractAddressSet()) {
-            return 
+        // if (!checkContractAddressSet()) {
+        //     return 
+        // }
+        setGeneratingImg(true);
+        console.log("generateImage")
+        axios.post("/api/v1/dalle/txt2img", {contractAddress: contractAddr,  prompt: form.prompt }, {timeout:300000})
+        .then((response) => {
+            console.log("/api/v1/dalle/txt2img")
+            // const base64ImageString = Buffer.from(response.data, 'binary').toString('base64')
+            const imageUrl = "data:image/png;base64,"+response.data
+            setForm({ ...form, photo: imageUrl });
+        })
+        
+        // setCorrect
+        axios.post("/api/v1/dalle/setIsCorrect", {contractAddress: contractAddr,  isCorrect: true }, {timeout:300000})
+        .then((response) => {
+            console.log("/api/v1/dalle/setIsCorrect: ", response.data)
+        })
+
+        // submitterUploadResult
+        axios.post("/api/v1/dalle/submitterUploadResult", {contractAddress: contractAddr}, {timeout:300000})
+        .then((response) => {
+            console.log("submitterUploadResult")
+            console.log(response.data)
+            // setContractAddress(response.data.MPChallenge)
+        })
+        
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong! \n\n ERROR :" + error,
+        });
+      } finally {
+        setGeneratingImg(false);
+        if (checkContractAddressSet()){
+            Swal.fire({
+                title: "Waiting...",
+                text: "please wait for 15s, if busy, please try again",
+            });
         }
+      }
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "please enter the prompt",
+      });
+    }
+  };
+
+  const generateIncorrectImage = async (contractAddr) => {
+    if (form.prompt) {
+      try {
+        // if (!checkContractAddressSet()) {
+        //     return 
+        // }
+        setGeneratingImg(true);
+        const randomPrompt = getRandomPrompt(form.prompt);
+        axios.post("/api/v1/dalle/txt2img", {contractAddress: contractAddr,  prompt: randomPrompt }, {timeout:300000})
+        .then((response) => {
+            console.log("/api/v1/dalle/txt2img")
+            // const base64ImageString = Buffer.from(response.data, 'binary').toString('base64')
+            const imageUrl = "data:image/png;base64,"+response.data
+            setForm({ ...form, photo: imageUrl });
+        })
+
+        // setCorrect
+        axios.post("/api/v1/dalle/setIsCorrect", {contractAddress: contractAddr,  isCorrect: false }, {timeout:300000})
+        .then((response) => {
+            console.log("/api/v1/dalle/setIsCorrect: ", response.data)
+        })
+        
+
+        // submitterUploadResult
+        axios.post("/api/v1/dalle/submitterUploadResult", {contractAddress: contractAddr,}, {timeout:300000})
+        .then((response) => {
+            console.log("submitterUploadResult")
+            console.log(response.data)
+            // setContractAddress(response.data.MPChallenge)
+        })
+        
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong! \n\n ERROR :" + error,
+        });
+      } finally {
+        setGeneratingImg(false);
+        if (checkContractAddressSet()){
+            Swal.fire({
+                title: "Waiting...",
+                text: "please wait for 15s, if busy, please try again",
+            });
+        }
+      }
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "please enter the prompt",
+      });
+    }
+  };
+
+  const generateMusic = async (contractAddr) => {
+    if (form.prompt) {
+      try {
+        // if (!checkContractAddressSet()) {
+        //     return 
+        // }
         setGeneratingMusic(true);
-        axios.post("/api/v1/dalle/txt2music", {contractAddress: contractAddress,  prompt: form.prompt }, {timeout:300000})
+        console.log("generateMusic")
+        axios.post("/api/v1/dalle/txt2music", {contractAddress: contractAddr,  prompt: form.prompt }, {timeout:300000})
         .then((response) => {
             console.log("/api/v1/dalle/txt2music")
             // const base64ImageString = Buffer.from(response.data, 'binary').toString('base64')
@@ -95,13 +204,13 @@ const CreatePost = () => {
         })
         
         // setCorrect
-        axios.post("/api/v1/dalle/setIsCorrect", {contractAddress: contractAddress,  isCorrect: true }, {timeout:300000})
+        axios.post("/api/v1/dalle/setIsCorrect", {contractAddress: contractAddr,  isCorrect: true }, {timeout:300000})
         .then((response) => {
             console.log("/api/v1/dalle/setIsCorrect: ", response.data)
         })
 
         // submitterUploadResult
-        axios.post("/api/v1/dalle/submitterUploadResult", {contractAddress: contractAddress,}, {timeout:300000})
+        axios.post("/api/v1/dalle/submitterUploadResult", {contractAddress: contractAddr,}, {timeout:300000})
         .then((response) => {
             console.log("submitterUploadResult")
             console.log(response.data)
@@ -132,15 +241,15 @@ const CreatePost = () => {
     }
   };
 
-  const generateIncorrectMusic = async () => {
+  const generateIncorrectMusic = async (contractAddr) => {
     if (form.prompt) {
       try {
-        if (!checkContractAddressSet()) {
-            return 
-        }
+        // if (!checkContractAddressSet()) {
+        //     return 
+        // }
         setGeneratingMusic(true);
         const randomPrompt = getRandomPrompt(form.prompt);
-        axios.post("/api/v1/dalle/txt2music", {contractAddress: contractAddress,  prompt: randomPrompt }, {timeout:300000})
+        axios.post("/api/v1/dalle/txt2music", {contractAddress: contractAddr,  prompt: randomPrompt }, {timeout:300000})
         .then((response) => {
             console.log("/api/v1/dalle/txt2music")
           const audioUrl = "data:audio/mpeg;base64," + response.data
@@ -148,14 +257,14 @@ const CreatePost = () => {
         })
 
         // setCorrect
-        axios.post("/api/v1/dalle/setIsCorrect", {contractAddress: contractAddress,  isCorrect: false }, {timeout:300000})
+        axios.post("/api/v1/dalle/setIsCorrect", {contractAddress: contractAddr,  isCorrect: false }, {timeout:300000})
         .then((response) => {
             console.log("/api/v1/dalle/setIsCorrect: ", response.data)
         })
         
 
         // submitterUploadResult
-        axios.post("/api/v1/dalle/submitterUploadResult", {contractAddress: contractAddress,}, {timeout:300000})
+        axios.post("/api/v1/dalle/submitterUploadResult", {contractAddress: contractAddr,}, {timeout:300000})
         .then((response) => {
             console.log("submitterUploadResult")
             console.log(response.data)
@@ -187,23 +296,33 @@ const CreatePost = () => {
   };
 
 
-  const initOPML = async () => {
+  const initOPML = async (type) => {
     try {
         if (!checkEnterPrompt()) {
             return false
         }
-        console.log("initOPML")
-        const data = {
-            modelName: "MusicGen",
-            prompt: form.prompt
+      console.log("initOPML")
+      let response, data
+      if (type == "music") {
+         data = {
+          modelName: "MusicGen",
+          prompt: form.prompt
         }
         console.log(data)
-        axios.post("/api/v1/dalle/opMLRequest", data, {timeout:300000})
-        .then((response) => {
-            console.log("/api/v1/dalle/opMLRequest")
-            console.log(response.data)
-            setContractAddress(response.data.MPChallenge)
-        })
+         response = await axios.post("/api/v1/dalle/opMLRequest", data, { timeout: 300000 })
+      }
+      else {
+        data = {
+          modelName: "StableDiffusion",
+          prompt: form.prompt
+        }
+        console.log(data)
+
+        response = await axios.post("/api/v1/dalle/opMLRequest", data, { timeout: 300000 })
+      }
+      console.log("response", response)
+      setContractAddress(response.data.MPChallenge)
+      return response.data.MPChallenge
     } catch (error) {
         Swal.fire({
             icon: "error",
@@ -349,10 +468,11 @@ const CreatePost = () => {
             })
 
             if (end) {
-                Swal.fire({
-                    title: "END",
-                    text: "Bisection END, Please ASSERT",
-                });
+                // Swal.fire({
+                //     title: "END",
+                //     text: "Bisection END, Please ASSERT",
+              // });
+              challengerAssert()
                 break
             }
         }
@@ -449,7 +569,7 @@ const CreatePost = () => {
   return (
     <section className="max-w-7xl mx-auto">
       <div>
-        <h1 className="font-extrabold text-[#222328] text-[32px]">opML - MusicGen</h1>
+        <h1 className="font-extrabold text-[#222328] text-[32px]">7007 Studio: Verifiable Generative Art</h1>
         <p className="mt-2 text-[#666e75] text-[16px] max-w-[500px]">
          Optimistic Machine Learning on Blockchain
         </p>
@@ -461,37 +581,86 @@ const CreatePost = () => {
             LabelName="Prompt"
             type="text"
             name="prompt"
-            placeholder="A Space Shuttle flying above Cape Town, digital art"
+            placeholder="A joyful and emotional piece of art work"
             value={form.prompt}
             handleChange={handleChange}
             isSurpriseMe
             handleSurpriseMe={handleSurpriseMe}
           />
-        <div>
-          <button
+          <div>
+            <div className="flex gap-5">
+              <button
+                type="button"
+                onClick={async () => {
+                  let contractAddr = await initOPML("img")
+                  console.log("contractAddr: ", contractAddr)
+                  await generateImage(contractAddr)
+                  contractAddr = await initOPML("music")
+                  await generateMusic(contractAddr)
+                }}
+            
+            className="text-white bg-green-700 font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center "
+          >
+            {generatingMusic ? "Generating..." : "Generate"}
+          </button>
+        </div>
+            <div className="mt-5 flex gap-5">
+              <button
+                type="button"
+                onClick={async () => {
+                  let contractAddr = await initOPML("img")
+                  await generateIncorrectImage(contractAddr)
+                  contractAddr = await initOPML("music")
+                  await generateIncorrectMusic(contractAddr)
+                }}
+            className="text-white bg-red-700 font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center "
+          >
+            {generatingMusic ? "Generating..." : "Incorrectly Generate"}
+          </button>
+        </div>
+          {/* <button
             type="button"
             className="mt-3 text-white bg-[#6469ff] font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center"
             onClick={initOPML}
           >
             {"Initiate OPML Request"}
-          </button>
-          <p>contract address: {contractAddress}</p>
+          </button> */}
+          
         </div>
 
           {/* audio tag */}
           
-
           <div className="relative bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-64 p-3 h-64 flex justify-center items-center">
-            {form.audio ? (
+            {form.photo ? (
+              <img
+                src={form.photo}
+                alt={form.prompt}
+                className="w-full h-full object-contain"
+              />
+            ) : (
+              <img
+                src={preview}
+                alt="preview"
+                className="w-9/12 h-9/12 object-contain opacity-40"
+              />
+            )}
+
+            {generatingImg && (
+              <div className="absolute inset-0 z-0 flex justify-center items-center bg-[rgba(0,0,0,0.5)] rounded-lg">
+                <Loader />
+              </div>
+            )}
+          </div>
+
+          <div className="relative bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-64 p-3 h-10 flex justify-center items-center">
+            {form.audio && 
               <audio controls
                 src={form.audio}
                 alt={form.prompt} 
                 type="audio/ogg"
                 className="w-full h-full object-contain">
               </audio>
-            ) : (
-              <div>No music now... Generate yourself!</div>
-            )}
+            }
 
             {generatingMusic && (
               <div className="absolute inset-0 z-0 flex justify-center items-center bg-[rgba(0,0,0,0.5)] rounded-lg">
@@ -501,72 +670,64 @@ const CreatePost = () => {
           </div>
         </div>
 
-        <div className="mt-5 flex gap-5">
-          <button
-            type="button"
-            onClick={generateMusic}
-            className="text-white bg-green-700 font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center "
-          >
-            {generatingMusic ? "Generating..." : "Generate"}
-          </button>
-        </div>
-        <div className="mt-5 flex gap-5">
-          <button
-            type="button"
-            onClick={generateIncorrectMusic}
-            className="text-white bg-red-700 font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center "
-          >
-            {generatingMusic ? "Generating..." : "Incorrectly Generate"}
-          </button>
-        </div>
-
+        
         <div>
+          <button
+            type="button"
+            className="mt-5 text-white bg-[#6469ff] font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+            onClick={() => {
+              startChallenge().then(() => {
+                autoRespond
+              })
+              
+            }
+            }
+          >
+            {"Start Verification"}
+          </button>
+        </div>
+        <div className="mt-5 flex gap-5">Smart contract address: {contractAddress}</div>
+        {/* <div>
           <button
             type="button"
             className="mt-3 text-white bg-[#6469ff] font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center"
             onClick={startChallenge}
           >
             {"Start Challenge"}
-          </button>
-          <p>challengeId: {challengeId}</p>
-        </div>
+          </button> */}
+          {/* <p>challengeId: {challengeId}</p> */}
+        {/* </div> */}
 
 
         <div>
-          <button
+          {/* <button
             type="button"
             className="mt-3 text-white bg-[#6469ff] font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center"
             onClick={challengerRespond}
           >
             {"Challenger Respond"}
-          </button>
+          </button> */}
+          <h3 className="font-extrabold text-[#222328] text-[20px]">Challenger Respond</h3>
           <p>checkpoints: {challengerCheckpoints}</p>
           <p>root: {challengerRoot}</p>
         </div>
 
         <div>
-          <button
+          {/* <button
             type="button"
             className="mt-3 text-white bg-[#6469ff] font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center"
             onClick={submitterRespond}
           >
             {"Submitter Respond"}
-          </button>
+          </button> */}
+          <h3 className="font-extrabold text-[#222328] text-[20px]">Submitter Respond</h3>
           <p>checkpoints: {submitterCheckpoints}</p>
           <p>root: {submitterRoot}</p>
         </div>
 
-        <div>
-          <button
-            type="button"
-            className="mt-3 text-white bg-[#6469ff] font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center"
-            onClick={autoRespond}
-          >
-            {"Automatically Respond"}
-          </button>
-        </div>
+        
 
-        <div>
+        {/* <div>
           <button
             type="button"
             className="mt-3 text-white bg-[#6469ff] font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center"
@@ -575,7 +736,7 @@ const CreatePost = () => {
             {"Assert"}
           </button>
           <p>Assert Result: {assertResult}</p>
-        </div>
+        </div> */}
 
         {/* <div className="mt-10">
           <p className="mt-2 text-[#666e75] text-[14px]">

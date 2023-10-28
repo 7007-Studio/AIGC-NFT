@@ -450,7 +450,7 @@ const CreatePost = () => {
   return (
     <section className="max-w-7xl mx-auto">
       <div>
-        <h1 className="font-extrabold text-[#222328] text-[32px]">opML - Stable Diffusion</h1>
+        <h1 className="font-extrabold text-[#222328] text-[32px]">7007 Studio: Verifiable Generative Art </h1>
         <p className="mt-2 text-[#666e75] text-[16px] max-w-[500px]">
          Optimistic Machine Learning on Blockchain
         </p>
