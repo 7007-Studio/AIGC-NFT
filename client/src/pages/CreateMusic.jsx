@@ -8,7 +8,7 @@ import { preview } from "../assets";
 
 import axios from 'axios';
 
-const CreatePost = () => {
+const CreateMusic = () => {
 
   const navigate = useNavigate();
 
@@ -754,4 +754,4 @@ const CreatePost = () => {
   );
 };
 
-export default CreatePost;
+export default CreateMusic;
