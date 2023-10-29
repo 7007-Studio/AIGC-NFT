@@ -86,14 +86,14 @@ const CreateMusic = () => {
         // }
         setGeneratingImg(true);
         console.log("generateImage")
-        axios.post("/api/v1/dalle/txt2img", {contractAddress: contractAddr,  prompt: form.prompt }, {timeout:300000})
-        .then((response) => {
+        let response = await axios.post("/api/v1/dalle/txt2img", {contractAddress: contractAddr,  prompt: form.prompt }, {timeout:300000})
+       
             console.log("/api/v1/dalle/txt2img")
             // const base64ImageString = Buffer.from(response.data, 'binary').toString('base64')
           const imageUrl = "data:image/png;base64," + response.data
           console.log(imageUrl)
             setForm({ ...form, photo: imageUrl });
-        })
+        return imageUrl
         
         // setCorrect
         axios.post("/api/v1/dalle/setIsCorrect", {contractAddress: contractAddr,  isCorrect: true }, {timeout:300000})
@@ -189,7 +189,7 @@ const CreateMusic = () => {
     }
   };
 
-  const generateMusic = async (contractAddr) => {
+  const generateMusic = async (contractAddr, img) => {
     if (form.prompt) {
       try {
         // if (!checkContractAddressSet()) {
@@ -204,7 +204,7 @@ const CreateMusic = () => {
           // const imageUrl = "data:image/png;base64," + response.data
           const audioUrl = "data:audio/mpeg;base64," + response.data
           console.log(form.photo)
-            setForm({ ...form, audio: audioUrl });
+            setForm({ ...form, photo: img, audio: audioUrl });
         })
         
         // setCorrect
@@ -598,9 +598,9 @@ const CreateMusic = () => {
                 onClick={async () => {
                   let contractAddr = await initOPML("img")
                   console.log("contractAddr: ", contractAddr)
-                  await generateImage(contractAddr)
+                  let img = await generateImage(contractAddr)
                   contractAddr = await initOPML("music")
-                  await generateMusic(contractAddr)
+                  await generateMusic(contractAddr, img)
                 }}
             
             className="text-white bg-green-700 font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center "
