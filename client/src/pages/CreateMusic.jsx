@@ -6,6 +6,7 @@ import { getRandomPrompt } from "../utils";
 
 import { preview } from "../assets";
 import { FFmpeg } from '@ffmpeg/ffmpeg';
+import { fetchFile } from '@ffmpeg/util';
 
 import axios from 'axios';
 
