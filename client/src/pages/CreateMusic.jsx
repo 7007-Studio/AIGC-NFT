@@ -245,7 +245,7 @@ const CreateMusic = () => {
     }
   };
 
-  const generateIncorrectMusic = async (contractAddr) => {
+  const generateIncorrectMusic = async (contractAddr, img) => {
     if (form.prompt) {
       try {
         // if (!checkContractAddressSet()) {
@@ -257,7 +257,7 @@ const CreateMusic = () => {
         .then((response) => {
             console.log("/api/v1/dalle/txt2music")
           const audioUrl = "data:audio/mpeg;base64," + response.data
-            setForm({ ...form, audio: audioUrl });
+            setForm({ ...form, photo: img, audio: audioUrl });
         })
 
         // setCorrect
@@ -613,9 +613,9 @@ const CreateMusic = () => {
                 type="button"
                 onClick={async () => {
                   let contractAddr = await initOPML("img")
-                  await generateIncorrectImage(contractAddr)
+                  let img = await generateIncorrectImage(contractAddr)
                   contractAddr = await initOPML("music")
-                  await generateIncorrectMusic(contractAddr)
+                  await generateIncorrectMusic(contractAddr, img)
                 }}
             className="text-white bg-red-700 font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center "
           >
