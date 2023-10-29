@@ -5,6 +5,7 @@ import { FormField, Loader } from "../components";
 import { getRandomPrompt } from "../utils";
 
 import { preview } from "../assets";
+import ffmpeg from 'ffmpeg.js/ffmpeg-webm';
 
 import axios from 'axios';
 
@@ -490,6 +491,59 @@ const CreateMusic = () => {
     }
   }
 
+  // Helper function to convert data URI to blob
+function dataURItoBlob(dataURI) {
+    const byteString = atob(dataURI.split(',')[1]);
+    const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([ab], { type: mimeString });
+}
+
+// Function to run FFmpeg and generate video
+ const generateVideo = async (imageBlob, audioBlob) => {
+    const { createWorker } = ffmpeg;
+    const worker = createWorker();
+
+    await worker.load();
+    
+    // Assuming you have your image and audio data as files or blobs
+    await worker.write('input.png', imageBlob);
+    await worker.write('input.ogg', audioBlob);
+    
+    await worker.run('-i input.png -i input.ogg -shortest output.mp4');
+    
+    const { data } = await worker.read('output.mp4');
+    
+    const videoBlob = new Blob([data.buffer], { type: 'video/mp4' });
+   const videoURL = URL.createObjectURL(videoBlob);
+   
+   console.log(videoURL)
+    
+    // if (videoRef.current) {
+    //   videoRef.current.src = videoURL;
+    // }
+  };
+
+  const mintNft = async () => {
+    console.log("mintNft")
+    // mint an nft with the photo and audio
+    // make an mp4 with the photo and audio
+    const imageBlob = dataURItoBlob(form.photo);
+    const audioBlob = dataURItoBlob(form.audio);
+    generateVideo(imageBlob, audioBlob)
+
+    // upload the mp4 to ipfs
+    const metadata = {
+      name: "7007 AIGC NFT",
+      description: "This NFT is generated and verified with OPML on https://demo.7007.studio/. The model used is Stable Diffusion and MusicGen. The original prompt is: " + form.prompt,
+      image: form.photo,
+    }
+  }
+
 
   const challengerAssert = async () => {
     try {
@@ -520,6 +574,11 @@ const CreateMusic = () => {
                     text: msg,
                 });
                 setAssertResult(msg)
+
+              if (!challengerWins) {
+                // mint the photo and img as nft 
+                mintNft();
+              }
             } 
         })
     } catch (error) {
