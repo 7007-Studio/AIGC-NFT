@@ -16,7 +16,7 @@ const CreateMusic = () => {
     name: "",
     prompt: "",
     audio: "",
-    imageUrl: ""
+    photo: ""
   });
   const [generatingImg, setGeneratingImg] = useState(false);
   const [generatingMusic, setGeneratingMusic] = useState(false);
@@ -201,7 +201,7 @@ const CreateMusic = () => {
             // const base64ImageString = Buffer.from(response.data, 'binary').toString('base64')
           // const imageUrl = "data:image/png;base64," + response.data
           const audioUrl = "data:audio/mpeg;base64," + response.data
-            setForm({ ...form, photo: imageUrl, audio: audioUrl });
+            setForm({ ...form, photo: form.photo, audio: audioUrl });
         })
         
         // setCorrect
@@ -654,13 +654,13 @@ const CreateMusic = () => {
           </div>
 
           <div className="relative bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-64 p-3 h-10 flex justify-center items-center">
-            {form.audio && 
-              <audio controls
+            {form.audio ? 
+              (<audio controls
                 src={form.audio}
                 alt={form.prompt} 
                 type="audio/ogg"
                 className="w-full h-full object-contain">
-              </audio>
+              </audio>): <p>Loading...</p>
             }
 
             {generatingMusic && (
