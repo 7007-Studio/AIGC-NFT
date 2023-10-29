@@ -1,12 +1,573 @@
-import React, { useState, useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { FormField, Loader } from "../components";
 import { getRandomPrompt } from "../utils";
 
-import { preview } from "../assets";
 import { FFmpeg } from '@ffmpeg/ffmpeg';
-import { fetchFile } from '@ffmpeg/util';
+import { fetchFile, toBlobURL } from '@ffmpeg/util';
+import { preview } from "../assets";
+import { create } from 'ipfs-http-client';
+import { Buffer } from 'buffer';
+
+import { ethers } from "ethers";
+import { JsonRpcProvider } from "@ethersproject/providers";
+
+const abi = [
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_modelIndex",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "_modelName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_modelSymbol",
+				"type": "string"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			}
+		],
+		"name": "ERC721IncorrectOwner",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "operator",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "ERC721InsufficientApproval",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "approver",
+				"type": "address"
+			}
+		],
+		"name": "ERC721InvalidApprover",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "operator",
+				"type": "address"
+			}
+		],
+		"name": "ERC721InvalidOperator",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			}
+		],
+		"name": "ERC721InvalidOwner",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "receiver",
+				"type": "address"
+			}
+		],
+		"name": "ERC721InvalidReceiver",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			}
+		],
+		"name": "ERC721InvalidSender",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "ERC721NonexistentToken",
+		"type": "error"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "approved",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "Approval",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "operator",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "approved",
+				"type": "bool"
+			}
+		],
+		"name": "ApprovalForAll",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "_fromTokenId",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "_toTokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "BatchMetadataUpdate",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "_tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "MetadataUpdate",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "Transfer",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "_tokenId",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "approve",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			}
+		],
+		"name": "balanceOf",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "getApproved",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getModelIndex",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "operator",
+				"type": "address"
+			}
+		],
+		"name": "isApprovedForAll",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_tokenURI",
+				"type": "string"
+			}
+		],
+		"name": "mint",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "modelIndex",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "name",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "ownerOf",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "safeTransferFrom",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bytes",
+				"name": "data",
+				"type": "bytes"
+			}
+		],
+		"name": "safeTransferFrom",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "operator",
+				"type": "address"
+			},
+			{
+				"internalType": "bool",
+				"name": "approved",
+				"type": "bool"
+			}
+		],
+		"name": "setApprovalForAll",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes4",
+				"name": "interfaceId",
+				"type": "bytes4"
+			}
+		],
+		"name": "supportsInterface",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "symbol",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "tokenURI",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "transferFrom",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+]
+
+
+const projectId = '2V1B4bBqSCyncDB2jeHd7uy5oLN'
+const projectSecret = '2b18de3a067e0a35d8700ef362c816dc'
+const auth =
+    'Basic ' + Buffer.from(projectId + ':' + projectSecret).toString('base64');
+
+const client = create({
+  host: 'ipfs.infura.io',
+  port: 5001,
+  protocol: 'https',
+  headers: {
+    authorization: auth,
+  },
+})
 
 import axios from 'axios';
 
@@ -348,7 +909,7 @@ const CreateMusic = () => {
         }
         console.log("startChallenge")
         const data = { contractAddress: contractAddress, }
-        console.log(data)
+        console.log("contractAddress", contractAddress)
         axios.post("/api/v1/dalle/startChallenge", data, {timeout:300000})
         .then((response) => {
             console.log("/api/v1/dalle/startChallenge")
@@ -506,23 +1067,38 @@ function dataURItoBlob(dataURI) {
     }
     return new Blob([ab], { type: mimeString });
 }
+  
 
 // Function to run FFmpeg and generate video
- const generateVideo = async (imageBlob, audioBlob) => {
-   const ffmpeg = ffmpegRef.current;
-   console.log("generateVideo", imageBlob, audioBlob)
-   await ffmpeg.load()
+  const generateVideo = async (imgUrl, audioUrl) => {
+   
+  
+   try {
+    //  console.log("generateVideo", imgUrl, audioUrl)
+    //  console.log(await fetchFile(imgUrl))
+
+    //  const ffmpeg = ffmpegRef.current;
+
+    //  await ffmpeg.load()
+
+
+    //  console.log(await fetchFile(audioUrl))
     
-   await ffmpeg.writeFile('input.png', await fetchFile(imageBlob));
-    await ffmpeg.writeFile('input.ogg', await fetchFile(audioBlob));
+    //  let ret = await ffmpeg.writeFile('input.png', await fetchFile(imgUrl));
+    //  console.log(ret)
+    //  await ffmpeg.writeFile('input.mpeg', await fetchFile(audioUrl));
   
    
-   await ffmpeg.exec(['-i', 'input.png', '-i', 'input.ogg', '-shortest', 'output.mp4']);
+    //  await ffmpeg.exec(['-i', 'input.png', '-i', 'input.mpeg', '-shortest', 'output.mp4']);
 
-    const data = await ffmpeg.readFile('output.mp4');
-    const videoURL = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
+    //  const data = await ffmpeg.readFile('output.mp4');
+    //  console.log("data", data)
+    //  const videoURL = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
 
-   console.log(videoURL)
+    //  console.log(videoURL)
+   } catch (err) {
+     console.log(err)
+   }
     
     // if (videoRef.current) {
     //   videoRef.current.src = videoURL;
@@ -533,16 +1109,57 @@ function dataURItoBlob(dataURI) {
     console.log("mintNft")
     // mint an nft with the photo and audio
     // make an mp4 with the photo and audio
-    const imageBlob = dataURItoBlob(form.photo);
-    const audioBlob = dataURItoBlob(form.audio);
-    generateVideo(imageBlob, audioBlob)
+    // generateVideo(form.photo, form.audio)
+    let response = await fetch(form.photo);
+    let blob = await response.blob();
+    let file = new File([blob], "file.png", { type: "image/png" });
+    let result = await client.add(file);
+    const ipfsLinkImg = "https://gateway.pinata.cloud/ipfs/" + result.path
+    // console.log("ipfs hash: ", result.path)
+
+    response = await fetch(form.audio);
+    blob = await response.blob();
+    file = new File([blob], "file.mp3", { type: "audio/mp3" });
+    result = await client.add(file);
+    const ipfsLinkAudio = "https://gateway.pinata.cloud/ipfs/" + result.path
 
     // upload the mp4 to ipfs
     const metadata = {
       name: "7007 AIGC NFT",
       description: "This NFT is generated and verified with OPML on https://demo.7007.studio/. The model used is Stable Diffusion and MusicGen. The original prompt is: " + form.prompt,
-      image: form.photo,
+      image: ipfsLinkImg,
+      external_url: "https://demo.7007.studio/",
+      attributes: [
+        {
+          trait_type: "prompt",
+          value: form.prompt,
+        },
+        {
+          trait_type: "music",
+          value: ipfsLinkAudio,
+        },
+        {
+          trait_type: "model",
+          value: "Stable Diffusion, MusicGen",
+        }
+      ],
     }
+
+    let buffer = Buffer.from(JSON.stringify(metadata));
+    result = await client.add(buffer);
+    const ipfsLinkMetadata = "https://gateway.pinata.cloud/ipfs/" + result.path
+    console.log("ipfs metadata: ", ipfsLinkMetadata)
+
+    // mint the nft
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    const signer = await provider.getSigner();
+    // const provider = new JsonRpcProvider("https://goerli.infura.io/v3/a84b538abf714818b3662cd1fcd7c530");
+    const contract = new ethers.Contract("0x4754a4059128fF45ae408bc7AB8Efe52b69cc5a4", abi, signer);
+    console.log("contract: ", contract)
+    let tx = await contract.mint(ipfsLinkMetadata)
+    await tx.wait()
+    console.log("tx: ", tx)
   }
 
 
