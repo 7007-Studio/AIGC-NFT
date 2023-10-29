@@ -5,7 +5,8 @@ import { FormField, Loader } from "../components";
 import { getRandomPrompt } from "../utils";
 
 import { preview } from "../assets";
-import ffmpeg from 'ffmpeg.js/ffmpeg-webm';
+import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
+const ffmpeg = createFFmpeg({ log: true });
 
 import axios from 'axios';
 
@@ -92,7 +93,7 @@ const CreateMusic = () => {
             console.log("/api/v1/dalle/txt2img")
             // const base64ImageString = Buffer.from(response.data, 'binary').toString('base64')
           const imageUrl = "data:image/png;base64," + response.data
-          console.log(imageUrl)
+          // console.log(imageUrl)
             setForm({ ...form, photo: imageUrl });
         return imageUrl
         
@@ -505,22 +506,15 @@ function dataURItoBlob(dataURI) {
 
 // Function to run FFmpeg and generate video
  const generateVideo = async (imageBlob, audioBlob) => {
-    const { createWorker } = ffmpeg;
-    const worker = createWorker();
-
-    await worker.load();
-    
-    // Assuming you have your image and audio data as files or blobs
-    await worker.write('input.png', imageBlob);
-    await worker.write('input.ogg', audioBlob);
-    
-    await worker.run('-i input.png -i input.ogg -shortest output.mp4');
-    
-    const { data } = await worker.read('output.mp4');
-    
-    const videoBlob = new Blob([data.buffer], { type: 'video/mp4' });
-   const videoURL = URL.createObjectURL(videoBlob);
+    await ffmpeg.load();
+    ffmpeg.FS('writeFile', 'input.png', await fetchFile(imageBlob));
+    ffmpeg.FS('writeFile', 'input.ogg', await fetchFile(audioBlob));
    
+   await ffmpeg.run('-i', 'input.png', '-i', 'input.ogg', '-shortest', 'output.mp4');
+
+    const data = ffmpeg.FS('readFile', 'output.mp4');
+    const videoURL = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
+
    console.log(videoURL)
     
     // if (videoRef.current) {
@@ -552,10 +546,10 @@ function dataURItoBlob(dataURI) {
         // }
         console.log("challengerAssert")
         const data = {contractAddress: contractAddress,}
-        console.log(data)
+        // console.log(data)
         axios.post("/api/v1/dalle/challengerAssert", data, {timeout:300000})
         .then((response) => {
-            console.log(response.data)
+            // console.log(response.data)
             console.log("/api/v1/dalle/challengerAssert")
             if (response.data.state == "NO DONE") {
                 Swal.fire({
@@ -656,7 +650,7 @@ function dataURItoBlob(dataURI) {
                 type="button"
                 onClick={async () => {
                   let contractAddr = await initOPML("img")
-                  console.log("contractAddr: ", contractAddr)
+                  // console.log("contractAddr: ", contractAddr)
                   let img = await generateImage(contractAddr)
                   contractAddr = await initOPML("music")
                   await generateMusic(contractAddr, img)
