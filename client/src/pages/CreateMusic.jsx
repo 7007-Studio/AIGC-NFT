@@ -16,6 +16,7 @@ const CreateMusic = () => {
     name: "",
     prompt: "",
     audio: "",
+    imageUrl: ""
   });
   const [generatingImg, setGeneratingImg] = useState(false);
   const [generatingMusic, setGeneratingMusic] = useState(false);
@@ -200,7 +201,7 @@ const CreateMusic = () => {
             // const base64ImageString = Buffer.from(response.data, 'binary').toString('base64')
           // const imageUrl = "data:image/png;base64," + response.data
           const audioUrl = "data:audio/mpeg;base64," + response.data
-            setForm({ ...form, audio: audioUrl });
+            setForm({ ...form, photo: imageUrl, audio: audioUrl });
         })
         
         // setCorrect
@@ -512,7 +513,7 @@ const CreateMusic = () => {
                 }
                 const msg = challengerWins ? "Verification Failed! The ML Result is corrupted." : "Verification Success! The ML Result is verified."
                 Swal.fire({
-                    title: "END",
+                    title: "Verification Result",
                     text: msg,
                 });
                 setAssertResult(msg)
