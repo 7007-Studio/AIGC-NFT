@@ -489,9 +489,9 @@ const CreateMusic = () => {
 
   const challengerAssert = async () => {
     try {
-        if (!checkContractAddressSet() || !checkChallengeIdSet()) {
-            return 
-        }
+        // if (!checkContractAddressSet() || !checkChallengeIdSet()) {
+        //     return 
+        // }
         console.log("challengerAssert")
         const data = {contractAddress: contractAddress,}
         console.log(data)
@@ -510,7 +510,7 @@ const CreateMusic = () => {
                 if (result_events.includes("ChallengerWins")){
                     challengerWins= true
                 }
-                const msg = challengerWins ? "Challenger WINS! The submitted result is incorrect. Please regenerate!" : "Submitter WINS!"
+                const msg = challengerWins ? "Verification Failed! The ML Result is corrupted." : "Verification Success! The ML Result is verified."
                 Swal.fire({
                     title: "END",
                     text: msg,
