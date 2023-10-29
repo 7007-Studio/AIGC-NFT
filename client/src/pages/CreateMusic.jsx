@@ -90,7 +90,8 @@ const CreateMusic = () => {
         .then((response) => {
             console.log("/api/v1/dalle/txt2img")
             // const base64ImageString = Buffer.from(response.data, 'binary').toString('base64')
-            const imageUrl = "data:image/png;base64,"+response.data
+          const imageUrl = "data:image/png;base64," + response.data
+          console.log(imageUrl)
             setForm({ ...form, photo: imageUrl });
         })
         
