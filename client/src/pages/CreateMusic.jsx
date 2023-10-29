@@ -5,12 +5,14 @@ import { FormField, Loader } from "../components";
 import { getRandomPrompt } from "../utils";
 
 import { preview } from "../assets";
-import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
-const ffmpeg = createFFmpeg({ log: true });
+import { FFmpeg } from '@ffmpeg/ffmpeg';
 
 import axios from 'axios';
 
 const CreateMusic = () => {
+
+  const ffmpegRef = useRef(new FFmpeg());
+    const videoRef = useRef(null);
 
   const navigate = useNavigate();
 
@@ -506,13 +508,15 @@ function dataURItoBlob(dataURI) {
 
 // Function to run FFmpeg and generate video
  const generateVideo = async (imageBlob, audioBlob) => {
-    await ffmpeg.load();
-    ffmpeg.FS('writeFile', 'input.png', await fetchFile(imageBlob));
-    ffmpeg.FS('writeFile', 'input.ogg', await fetchFile(audioBlob));
+  const ffmpeg = ffmpegRef.current;
+    
+   await ffmpeg.writeFile('input.png', await fetchFile(imageBlob));
+    await ffmpeg.writeFile('input.ogg', await fetchFile(audioBlob));
+  
    
-   await ffmpeg.run('-i', 'input.png', '-i', 'input.ogg', '-shortest', 'output.mp4');
+   await ffmpeg.exec(['-i', 'input.png', '-i', 'input.ogg', '-shortest', 'output.mp4']);
 
-    const data = ffmpeg.FS('readFile', 'output.mp4');
+    const data = await ffmpeg.readFile('output.mp4');
     const videoURL = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
 
    console.log(videoURL)
