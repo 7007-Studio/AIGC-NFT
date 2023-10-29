@@ -225,12 +225,12 @@ const CreateMusic = () => {
         });
       } finally {
         setGeneratingMusic(false);
-        if (checkContractAddressSet()){
-            Swal.fire({
-                title: "Waiting...",
-                text: "please wait for 15s, if busy, please try again",
-            });
-        }
+        // if (checkContractAddressSet()){
+        //     Swal.fire({
+        //         title: "Waiting...",
+        //         text: "please wait for 15s, if busy, please try again",
+        //     });
+        // }
       }
     } else {
       Swal.fire({
@@ -279,12 +279,12 @@ const CreateMusic = () => {
         });
       } finally {
         setGeneratingMusic(false);
-        if (checkContractAddressSet()){
-            Swal.fire({
-                title: "Waiting...",
-                text: "please wait for 15s, if busy, please try again",
-            });
-        }
+        // if (checkContractAddressSet()){
+        //     Swal.fire({
+        //         title: "Waiting...",
+        //         text: "please wait for 15s, if busy, please try again",
+        //     });
+        // }
       }
     } else {
       Swal.fire({
@@ -431,9 +431,9 @@ const CreateMusic = () => {
 
   const autoRespond = async () => {
     try {
-        if (!checkContractAddressSet() || !checkChallengeIdSet()) {
-            return 
-        }
+        // if (!checkContractAddressSet() || !checkChallengeIdSet()) {
+        //     return 
+        // }
         console.log("autoRespond")
         const data = {contractAddress: contractAddress,}
         let end = false;
