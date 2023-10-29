@@ -509,7 +509,8 @@ function dataURItoBlob(dataURI) {
 
 // Function to run FFmpeg and generate video
  const generateVideo = async (imageBlob, audioBlob) => {
-  const ffmpeg = ffmpegRef.current;
+   const ffmpeg = ffmpegRef.current;
+   await ffmpeg.load()
     
    await ffmpeg.writeFile('input.png', await fetchFile(imageBlob));
     await ffmpeg.writeFile('input.ogg', await fetchFile(audioBlob));
