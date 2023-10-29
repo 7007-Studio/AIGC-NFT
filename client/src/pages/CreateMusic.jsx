@@ -675,10 +675,10 @@ const CreateMusic = () => {
           <button
             type="button"
             className="mt-5 text-white bg-[#6469ff] font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center"
-            onClick={() => {
-              startChallenge().then(() => {
-                autoRespond
-              })
+            onClick={async () => {
+              await startChallenge()
+              autoRespond()
+              
               
             }
             }
