@@ -3,22 +3,30 @@ const { expect } = require("chai");
 async function main() {
   const [owner] = await ethers.getSigners();
 
+  const AIGC = await ethers.getContractFactory("AIGC");
+  const aigc = await AIGC.deploy();
+  await aigc.waitForDeployment();
+
   const AIGC_Factory = await ethers.getContractFactory("AIGC_Factory");
-  // const AIGC_factory = await AIGC_Factory.deploy();
+  const AIGC_factory = await AIGC_Factory.deploy(aigc.target);
 
-  // await AIGC_factory.waitForDeployment();
+  await AIGC_factory.waitForDeployment();
 
-  // // wait for 3 seconds
-  // await new Promise((r) => setTimeout(r, 3000));
+  // wait for 10 seconds
+  await new Promise((r) => setTimeout(r, 10000));
 
-  // console.log("AIGC_factory deployed to:", AIGC_factory.target);
+  console.log("AIGC_factory deployed to:", AIGC_factory.target);
 
-  // // verify on etherscan
+  // verify on etherscan
   // await hre.run("verify:verify", {
   //   address: AIGC_factory.target,
   //   contract: "contracts/AIGC_Factory.sol:AIGC_Factory",
   //   constructorArguments: [],
   // });
+
+  // const AIGC_factory = await AIGC_Factory.attach(
+  //   "0x48A4F096634680606F3184525B4Dd9eC19755AaB"
+  // );
 
   const MockOpmlLib = await ethers.getContractFactory("MockOpmlLib");
   // const mockOpmlLib = await MockOpmlLib.deploy();
@@ -43,30 +51,25 @@ async function main() {
   const ownerReservePercent = 10;
   const royalty = 10;
 
-  // await AIGC_factory.createAIGC(
-  //   modelName,
-  //   modelSymbol,
-  //   tokenPrice,
-  //   costToken,
-  //   aiModelVm,
-  //   opmlLib,
-  //   tokenMaxSupply,
-  //   ownerReservePercent,
-  //   royalty
-  // );
-
-  // // wait for 3 seconds
-  // await new Promise((r) => setTimeout(r, 3000));
-
-  const AIGC_factory = await AIGC_Factory.attach(
-    "0x193c9be4d9bb1d5dd7c79606015c2746a4cda235"
+  await AIGC_factory.createAIGC(
+    modelName,
+    modelSymbol,
+    tokenPrice,
+    costToken,
+    aiModelVm,
+    ownerReservePercent,
+    royalty
   );
+  const ipOrgAddr = await AIGC_factory.modelIndexToIpOrgAddr(0);
+  console.log("ipOrgAddr", ipOrgAddr);
+
+  // wait for 3 seconds
+  // await new Promise((r) => setTimeout(r, 3000));
 
   const aigcAddr = await AIGC_factory.getAIGC(0);
   const aigtAddr = await AIGC_factory.getAIGT(0);
 
-  const AIGC = await ethers.getContractFactory("AIGC");
-  const aigc = await AIGC.attach(aigcAddr);
+  // const aigc = await AIGC.attach(aigcAddr);
 
   // verify on etherscan
   // await hre.run("verify:verify", {
@@ -81,6 +84,8 @@ async function main() {
   //     aiModelVm,
   //     opmlLib,
   //     royalty,
+  //     ipOrgAddr,
+  //     owner.address,
   //   ],
   // });
 
@@ -111,7 +116,8 @@ async function main() {
   await aigc.mint(
     "tokenuri",
     ethers.encodeBytes32String("text"),
-    ethers.encodeBytes32String("text")
+    ethers.encodeBytes32String("text"),
+    "ipfsMediaUrl"
   );
 }
 main();
