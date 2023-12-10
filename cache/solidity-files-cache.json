@@ -1,8 +1,80 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
+    "/Users/tina/hack/AIGC-NFT/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol": {
+      "lastModificationDate": 1702099782535,
+      "contentHash": "f808b485ee0cdc6768ee8385ae5f9a2a",
+      "sourceName": "@openzeppelin/contracts/interfaces/IERC165.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 1000
+          },
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../utils/introspection/IERC165.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": []
+    },
+    "/Users/tina/hack/AIGC-NFT/node_modules/@openzeppelin/contracts/interfaces/IERC721.sol": {
+      "lastModificationDate": 1702099782537,
+      "contentHash": "d8d23fc2f55ed934d1a1b91c9afd8526",
+      "sourceName": "@openzeppelin/contracts/interfaces/IERC721.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 1000
+          },
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../token/ERC721/IERC721.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": []
+    },
     "/Users/tina/hack/AIGC-NFT/contracts/AIGC.sol": {
-      "lastModificationDate": 1702171929751,
+      "lastModificationDate": 1702194997953,
       "contentHash": "f55c9d8c27ff03bfd2639a0f5508af3d",
       "sourceName": "contracts/AIGC.sol",
       "solcConfig": {
@@ -272,42 +344,6 @@
         "IERC4906"
       ]
     },
-    "/Users/tina/hack/AIGC-NFT/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol": {
-      "lastModificationDate": 1702099782535,
-      "contentHash": "f808b485ee0cdc6768ee8385ae5f9a2a",
-      "sourceName": "@openzeppelin/contracts/interfaces/IERC165.sol",
-      "solcConfig": {
-        "version": "0.8.20",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 1000
-          },
-          "evmVersion": "paris",
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "../utils/introspection/IERC165.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": []
-    },
     "/Users/tina/hack/AIGC-NFT/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol": {
       "lastModificationDate": 1702099782522,
       "contentHash": "1e64e2ad597dc5b2dae11346502baad4",
@@ -423,42 +459,6 @@
       "artifacts": [
         "Math"
       ]
-    },
-    "/Users/tina/hack/AIGC-NFT/node_modules/@openzeppelin/contracts/interfaces/IERC721.sol": {
-      "lastModificationDate": 1702099782537,
-      "contentHash": "d8d23fc2f55ed934d1a1b91c9afd8526",
-      "sourceName": "@openzeppelin/contracts/interfaces/IERC721.sol",
-      "solcConfig": {
-        "version": "0.8.20",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 1000
-          },
-          "evmVersion": "paris",
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "../token/ERC721/IERC721.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": []
     },
     "/Users/tina/hack/AIGC-NFT/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": {
       "lastModificationDate": 1702099782535,
@@ -798,8 +798,8 @@
       ]
     },
     "/Users/tina/hack/AIGC-NFT/contracts/AIGC_Factory.sol": {
-      "lastModificationDate": 1702183860098,
-      "contentHash": "3926712d31551931d43b890f788b55a0",
+      "lastModificationDate": 1702195767081,
+      "contentHash": "cdd4f50a44c8e77dcd1d2185899fdb3e",
       "sourceName": "contracts/AIGC_Factory.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -827,7 +827,8 @@
       },
       "imports": [
         "./AIGC.sol",
-        "./AIGT.sol"
+        "./AIGT.sol",
+        "./IStoryProtocol.sol"
       ],
       "versionPragmas": [
         ">=0.7.0 <0.9.0"
@@ -873,6 +874,43 @@
       ],
       "artifacts": [
         "AIGT"
+      ]
+    },
+    "/Users/tina/hack/AIGC-NFT/contracts/IStoryProtocol.sol": {
+      "lastModificationDate": 1702194997955,
+      "contentHash": "d64a3782d673dfb6e25c4f3a80c7131f",
+      "sourceName": "contracts/IStoryProtocol.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 1000
+          },
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.7.0 <0.9.0"
+      ],
+      "artifacts": [
+        "IStoryProtocol",
+        "Registration"
       ]
     },
     "/Users/tina/hack/AIGC-NFT/node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol": {
@@ -1026,43 +1064,6 @@
       ],
       "artifacts": [
         "MockOpmlLib"
-      ]
-    },
-    "/Users/tina/hack/AIGC-NFT/contracts/IStoryProtocol.sol": {
-      "lastModificationDate": 1702183347041,
-      "contentHash": "d64a3782d673dfb6e25c4f3a80c7131f",
-      "sourceName": "contracts/IStoryProtocol.sol",
-      "solcConfig": {
-        "version": "0.8.20",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 1000
-          },
-          "evmVersion": "paris",
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        ">=0.7.0 <0.9.0"
-      ],
-      "artifacts": [
-        "IStoryProtocol",
-        "Registration"
       ]
     }
   }
