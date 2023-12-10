@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/tina/hack/AIGC-NFT/contracts/AIGC.sol": {
-      "lastModificationDate": 1702099632207,
-      "contentHash": "b0a09a19a59b1f747af27d4597693130",
+      "lastModificationDate": 1702171929751,
+      "contentHash": "f55c9d8c27ff03bfd2639a0f5508af3d",
       "sourceName": "contracts/AIGC.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -31,50 +31,15 @@
       },
       "imports": [
         "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
+        "@openzeppelin/contracts/token/ERC721/extensions/ERC721Royalty.sol",
         "@openzeppelin/contracts/token/ERC20/IERC20.sol",
-        "./OpmlLib.sol"
+        "./IOpmlLib.sol"
       ],
       "versionPragmas": [
         ">=0.7.0 <0.9.0"
       ],
       "artifacts": [
         "AIGC"
-      ]
-    },
-    "/Users/tina/hack/AIGC-NFT/contracts/OpmlLib.sol": {
-      "lastModificationDate": 1702099654098,
-      "contentHash": "663f886405c37124a171ae561f16da07",
-      "sourceName": "contracts/OpmlLib.sol",
-      "solcConfig": {
-        "version": "0.8.20",
-        "settings": {
-          "evmVersion": "paris",
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        ">=0.7.0 <0.9.0"
-      ],
-      "artifacts": [
-        "OpmlLib"
       ]
     },
     "/Users/tina/hack/AIGC-NFT/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": {
@@ -681,8 +646,8 @@
       ]
     },
     "/Users/tina/hack/AIGC-NFT/contracts/AIGC_Factory.sol": {
-      "lastModificationDate": 1702099627041,
-      "contentHash": "e1e866c3a415c8f1283c445fc8da5b2b",
+      "lastModificationDate": 1702172020910,
+      "contentHash": "9db0506c818c72fa2e1a943b9b63316b",
       "sourceName": "contracts/AIGC_Factory.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -720,8 +685,8 @@
       ]
     },
     "/Users/tina/hack/AIGC-NFT/contracts/AIGT.sol": {
-      "lastModificationDate": 1702099641395,
-      "contentHash": "7befa3ad3486584f5e921d11d96ce767",
+      "lastModificationDate": 1702172286549,
+      "contentHash": "17b0594195311832c43e97aac7e23218",
       "sourceName": "contracts/AIGT.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -873,6 +838,194 @@
       ],
       "artifacts": [
         "IERC20Metadata"
+      ]
+    },
+    "/Users/tina/hack/AIGC-NFT/contracts/IOpmlLib.sol": {
+      "lastModificationDate": 1702168127082,
+      "contentHash": "a16dc5f31743cf7c3416402581459247",
+      "sourceName": "contracts/IOpmlLib.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.7.0 <0.9.0"
+      ],
+      "artifacts": [
+        "IOpmlLib"
+      ]
+    },
+    "/Users/tina/hack/AIGC-NFT/node_modules/@openzeppelin/contracts/token/ERC721/extensions/ERC721Royalty.sol": {
+      "lastModificationDate": 1702099782523,
+      "contentHash": "2e11a891bdfd79c8fe71d8b08a01712b",
+      "sourceName": "@openzeppelin/contracts/token/ERC721/extensions/ERC721Royalty.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../ERC721.sol",
+        "../../common/ERC2981.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "ERC721Royalty"
+      ]
+    },
+    "/Users/tina/hack/AIGC-NFT/node_modules/@openzeppelin/contracts/token/common/ERC2981.sol": {
+      "lastModificationDate": 1702099782521,
+      "contentHash": "3c04b86a06ae097ae7001eb03ab78e2d",
+      "sourceName": "@openzeppelin/contracts/token/common/ERC2981.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../../interfaces/IERC2981.sol",
+        "../../utils/introspection/ERC165.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "ERC2981"
+      ]
+    },
+    "/Users/tina/hack/AIGC-NFT/node_modules/@openzeppelin/contracts/interfaces/IERC2981.sol": {
+      "lastModificationDate": 1702099782536,
+      "contentHash": "a121ffbe9ad90f8eb00e40e96adc5a42",
+      "sourceName": "@openzeppelin/contracts/interfaces/IERC2981.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../utils/introspection/IERC165.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "IERC2981"
+      ]
+    },
+    "/Users/tina/hack/AIGC-NFT/contracts/MockOpmlLib.sol": {
+      "lastModificationDate": 1702168220535,
+      "contentHash": "01bd11b4a35ef26eb77a865dd342dd3e",
+      "sourceName": "contracts/MockOpmlLib.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.7.0 <0.9.0"
+      ],
+      "artifacts": [
+        "MockOpmlLib"
       ]
     }
   }
