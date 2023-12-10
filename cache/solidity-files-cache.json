@@ -798,8 +798,8 @@
       ]
     },
     "/Users/tina/hack/AIGC-NFT/contracts/AIGC_Factory.sol": {
-      "lastModificationDate": 1702172020910,
-      "contentHash": "9db0506c818c72fa2e1a943b9b63316b",
+      "lastModificationDate": 1702183860098,
+      "contentHash": "3926712d31551931d43b890f788b55a0",
       "sourceName": "contracts/AIGC_Factory.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -1026,6 +1026,43 @@
       ],
       "artifacts": [
         "MockOpmlLib"
+      ]
+    },
+    "/Users/tina/hack/AIGC-NFT/contracts/IStoryProtocol.sol": {
+      "lastModificationDate": 1702183347041,
+      "contentHash": "d64a3782d673dfb6e25c4f3a80c7131f",
+      "sourceName": "contracts/IStoryProtocol.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 1000
+          },
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.7.0 <0.9.0"
+      ],
+      "artifacts": [
+        "IStoryProtocol",
+        "Registration"
       ]
     }
   }

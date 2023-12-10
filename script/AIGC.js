@@ -4,10 +4,34 @@ async function main() {
   const [owner] = await ethers.getSigners();
 
   const AIGC_Factory = await ethers.getContractFactory("AIGC_Factory");
-  const AIGC_factory = await AIGC_Factory.deploy();
+  // const AIGC_factory = await AIGC_Factory.deploy();
+
+  // await AIGC_factory.waitForDeployment();
+
+  // // wait for 3 seconds
+  // await new Promise((r) => setTimeout(r, 3000));
+
+  // console.log("AIGC_factory deployed to:", AIGC_factory.target);
+
+  // // verify on etherscan
+  // await hre.run("verify:verify", {
+  //   address: AIGC_factory.target,
+  //   contract: "contracts/AIGC_Factory.sol:AIGC_Factory",
+  //   constructorArguments: [],
+  // });
 
   const MockOpmlLib = await ethers.getContractFactory("MockOpmlLib");
-  const mockOpmlLib = await MockOpmlLib.deploy();
+  // const mockOpmlLib = await MockOpmlLib.deploy();
+
+  const mockOpmlLib = await MockOpmlLib.attach(
+    "0xfEBfdE43561Bc74e4F982cdEB40A29966708E035"
+  );
+  // verify on etherscan
+  // await hre.run("verify:verify", {
+  //   address: "0xfEBfdE43561Bc74e4F982cdEB40A29966708E035",
+  //   contract: "contracts/MockOpmlLib.sol:MockOpmlLib",
+  //   constructorArguments: [],
+  // });
 
   const modelName = "Stable Diffusion";
   const modelSymbol = "SD";
@@ -19,32 +43,70 @@ async function main() {
   const ownerReservePercent = 10;
   const royalty = 10;
 
-  await AIGC_factory.createAIGC(
-    modelName,
-    modelSymbol,
-    tokenPrice,
-    costToken,
-    aiModelVm,
-    opmlLib,
-    tokenMaxSupply,
-    ownerReservePercent,
-    royalty
+  // await AIGC_factory.createAIGC(
+  //   modelName,
+  //   modelSymbol,
+  //   tokenPrice,
+  //   costToken,
+  //   aiModelVm,
+  //   opmlLib,
+  //   tokenMaxSupply,
+  //   ownerReservePercent,
+  //   royalty
+  // );
+
+  // // wait for 3 seconds
+  // await new Promise((r) => setTimeout(r, 3000));
+
+  const AIGC_factory = await AIGC_Factory.attach(
+    "0x193c9be4d9bb1d5dd7c79606015c2746a4cda235"
   );
 
-  const aigcAddr = await AIGC_factory.deployedAIGCs(0);
-  const aigtAddr = await AIGC_factory.deployedAIGTs(0);
+  const aigcAddr = await AIGC_factory.getAIGC(0);
+  const aigtAddr = await AIGC_factory.getAIGT(0);
 
   const AIGC = await ethers.getContractFactory("AIGC");
   const aigc = await AIGC.attach(aigcAddr);
 
+  // verify on etherscan
+  // await hre.run("verify:verify", {
+  //   address: aigcAddr,
+  //   contract: "contracts/AIGC.sol:AIGC",
+  //   constructorArguments: [
+  //     0,
+  //     modelName,
+  //     modelSymbol,
+  //     aigtAddr,
+  //     costToken,
+  //     aiModelVm,
+  //     opmlLib,
+  //     royalty,
+  //   ],
+  // });
+
   const AIGT = await ethers.getContractFactory("AIGT");
   const aigt = await AIGT.attach(aigtAddr);
+
+  // verify on etherscan
+  // await hre.run("verify:verify", {
+  //   address: aigtAddr,
+  //   contract: "contracts/AIGT.sol:AIGT",
+  //   constructorArguments: [
+  //     0,
+  //     modelName,
+  //     modelSymbol,
+  //     tokenPrice,
+  //     owner.address,
+  //     tokenMaxSupply,
+  //     ownerReservePercent,
+  //   ],
+  // });
 
   // buy one aigt
   await aigt.mint(1);
 
   // approve token
-  await aigt.approve(aigcAddr, 1);
+  await aigt.approve(aigcAddr, 1000);
 
   await aigc.mint(
     "tokenuri",

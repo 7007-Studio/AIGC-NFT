@@ -28,8 +28,11 @@ contract AIGC_Factory {
         return modelIndexCurrent;
     }
 
-    function getDeployedAIGCs() public view returns (address[] memory) {
-        return deployedAIGCs;
+    function getAIGC(uint256 _modelIndex) public view returns (address) {
+        return deployedAIGCs[_modelIndex];
+    }
+    function getAIGT(uint256 _modelIndex) public view returns (address) {
+        return deployedAIGTs[_modelIndex];
     }
     
 }
