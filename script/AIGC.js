@@ -5,14 +5,16 @@ async function main() {
 
   const AIGC_Factory = await ethers.getContractFactory("AIGC_Factory");
   const AIGC_factory = await AIGC_Factory.deploy();
-  await AIGC_factory.deployed();
+
+  const MockOpmlLib = await ethers.getContractFactory("MockOpmlLib");
+  const mockOpmlLib = await MockOpmlLib.deploy();
 
   const modelName = "Stable Diffusion";
   const modelSymbol = "SD";
-  const tokenPrice = 1; // initial price to buy model's token
+  const tokenPrice = 0; // initial price to buy model's token
   const costToken = 1; // cost of token to mint AIGC nft
-  const aiModelVm = 0x00;
-  const opmlLib = 0x00;
+  const aiModelVm = ethers.encodeBytes32String("text");
+  const opmlLib = mockOpmlLib.target;
   const tokenMaxSupply = 1000;
   const ownerReservePercent = 10;
   const royalty = 10;
@@ -38,8 +40,17 @@ async function main() {
   const AIGT = await ethers.getContractFactory("AIGT");
   const aigt = await AIGT.attach(aigtAddr);
 
-  // mint aigc nft
-  await aigc.mint("tokenuri", 0x0, 0x0);
+  // buy one aigt
+  await aigt.mint(1);
+
+  // approve token
+  await aigt.approve(aigcAddr, 1);
+
+  await aigc.mint(
+    "tokenuri",
+    ethers.encodeBytes32String("text"),
+    ethers.encodeBytes32String("text")
+  );
 }
 main();
 // curation mechanism
