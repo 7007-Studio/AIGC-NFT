@@ -30,7 +30,7 @@ contract AIGC_Factory {
         // story protocol register IP
         string[] memory ipAssetTypesShared = new string[](1);
         ipAssetTypesShared[0] = "Image";
-
+        
         address ipOrgAddr = IStoryProtocol(0x537fcCce413236A4E5f4f385e2edC861aEc622f0).registerIpOrg(
             aigcContractImpl.predictDeterministicAddress(bytes32(modelIndexCurrent)), // owner to be replaced
             _modelName, // IP org name
@@ -51,7 +51,7 @@ contract AIGC_Factory {
         vals2[0] = _modelName;
         vals2[1] = _modelSymbol;
         address[] memory vals3 = new address[](3);
-        vals3[0] = address(newAIGT);
+        vals3[0] = newAIGT;
         vals3[1] = 0xfEBfdE43561Bc74e4F982cdEB40A29966708E035;
         vals3[2] = ipOrgAddr;
 

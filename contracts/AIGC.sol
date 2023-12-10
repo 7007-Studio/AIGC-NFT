@@ -26,9 +26,9 @@ contract AIGC is Initializable, ERC721Upgradeable, ERC721URIStorageUpgradeable, 
 
 
         /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
-        _disableInitializers();
-    }
+        constructor() {
+            _disableInitializers();
+        }
  
     
       function initialize(uint256[] memory vals, string[] memory vals2, address[] memory vals3, bytes32 _aiModelVm, uint96 _royalty) public initializer {
