@@ -4,18 +4,18 @@ async function main() {
   const [owner] = await ethers.getSigners();
 
   const AIGC_Factory = await ethers.getContractFactory("AIGC_Factory");
-  // const AIGC_factory = await AIGC_Factory.deploy();
+  const AIGC_factory = await AIGC_Factory.attach(
+    "0xE183C349036DF6cb0F481D73e54A1CF82bFb4375"
+  );
 
-  // await AIGC_factory.waitForDeployment();
-
-  // // wait for 3 seconds
-  // await new Promise((r) => setTimeout(r, 3000));
+  // // wait for 10 seconds
+  await new Promise((r) => setTimeout(r, 10000));
 
   // console.log("AIGC_factory deployed to:", AIGC_factory.target);
 
   // // verify on etherscan
   // await hre.run("verify:verify", {
-  //   address: AIGC_factory.target,
+  //   address: "0xE183C349036DF6cb0F481D73e54A1CF82bFb4375",
   //   contract: "contracts/AIGC_Factory.sol:AIGC_Factory",
   //   constructorArguments: [],
   // });
@@ -43,24 +43,22 @@ async function main() {
   const ownerReservePercent = 10;
   const royalty = 10;
 
-  // await AIGC_factory.createAIGC(
-  //   modelName,
-  //   modelSymbol,
-  //   tokenPrice,
-  //   costToken,
-  //   aiModelVm,
-  //   opmlLib,
-  //   tokenMaxSupply,
-  //   ownerReservePercent,
-  //   royalty
-  // );
-
-  // // wait for 3 seconds
-  // await new Promise((r) => setTimeout(r, 3000));
-
-  const AIGC_factory = await AIGC_Factory.attach(
-    "0x193c9be4d9bb1d5dd7c79606015c2746a4cda235"
+  await AIGC_factory.createAIGC(
+    modelName,
+    modelSymbol,
+    tokenPrice,
+    costToken,
+    aiModelVm,
+    ownerReservePercent,
+    royalty
   );
+
+  //  wait for 10 seconds
+  await new Promise((r) => setTimeout(r, 10000));
+
+  // const AIGC_factory = await AIGC_Factory.attach(
+  //   "0x193c9be4d9bb1d5dd7c79606015c2746a4cda235"
+  // );
 
   const aigcAddr = await AIGC_factory.getAIGC(0);
   const aigtAddr = await AIGC_factory.getAIGT(0);
