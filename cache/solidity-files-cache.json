@@ -800,8 +800,8 @@
       ]
     },
     "/Users/tina/hack/AIGC-NFT/contracts/AIGC_Factory.sol": {
-      "lastModificationDate": 1702237349223,
-      "contentHash": "62c20eaed8a4ea335d2045edd8c36e1f",
+      "lastModificationDate": 1702241261183,
+      "contentHash": "90c3ebeb9d0121e5f6dd969ecbeca971",
       "sourceName": "contracts/AIGC_Factory.sol",
       "solcConfig": {
         "version": "0.8.20",

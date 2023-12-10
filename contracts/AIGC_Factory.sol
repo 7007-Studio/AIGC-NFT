@@ -24,9 +24,13 @@ contract AIGC_Factory {
     // need to deploy aigc contract first
     constructor(address _aigcContractImpl) {
         aigcContractImpl = _aigcContractImpl;
+        deployedAIGCs.push(address(0)); // for index to start from 1
+        deployedAIGTs.push(address(0));
     }
 
     function createAIGC(string memory _modelName, string memory _modelSymbol, uint256 _tokenPrice, uint256 _costToken, bytes32 _aiModelVm, uint256 _ownerReservePercent, uint96 _royalty) public returns (uint256) {
+        modelIndexCurrent++;
+
         // story protocol register IP
         string[] memory ipAssetTypesShared = new string[](1);
         ipAssetTypesShared[0] = "Image";
