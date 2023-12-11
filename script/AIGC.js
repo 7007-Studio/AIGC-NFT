@@ -4,14 +4,14 @@ async function main() {
   const [owner] = await ethers.getSigners();
 
   const AIGC = await ethers.getContractFactory("AIGC");
-  const _aigc = await AIGC.deploy();
-  await _aigc.waitForDeployment();
+  // const _aigc = await AIGC.deploy();
+  // await _aigc.waitForDeployment();
 
   const AIGC_Factory = await ethers.getContractFactory("AIGC_Factory");
-  const AIGC_factory = await AIGC_Factory.deploy(_aigc.target);
-  // const AIGC_factory = await AIGC_Factory.attach(
-  //   "0xee536864561171617955c4F6C6893B9Cd2399683"
-  // );
+  // const AIGC_factory = await AIGC_Factory.deploy(_aigc.target);
+  const AIGC_factory = await AIGC_Factory.attach(
+    "0x191Ad675CA576c8b8dE269548A87Cd3D60696B9e"
+  );
 
   // await AIGC_factory.waitForDeployment();
 
@@ -64,8 +64,8 @@ async function main() {
     royalty
   );
 
-  // wait for 5 seconds
-  await new Promise((r) => setTimeout(r, 5000));
+  // wait for 10 seconds
+  await new Promise((r) => setTimeout(r, 10000));
 
   const ipOrgAddr = await AIGC_factory.modelIndexToIpOrgAddr(1);
   console.log("ipOrgAddr", ipOrgAddr);

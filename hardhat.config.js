@@ -30,9 +30,12 @@ module.exports = {
       accounts: [process.env.PRIVATE_KEY],
     },
   },
+  sourcify: {
+    enabled: true,
+  },
   etherscan: {
     apiKey: {
-      sepolia: "5H7CR7NSYC2ZTJNQMFUY53Y8U2KVD6KF5G",
+      sepolia: "YBEWP7BFV73TBGEWD9G7C8ZCV2KD7ZZVCD",
     },
   },
 
